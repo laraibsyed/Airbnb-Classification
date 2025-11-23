@@ -416,7 +416,7 @@ cols_to_drop = c(
   "calculated_host_listings_count_private_rooms", "calculated_host_listings_count_shared_rooms",
   "competitor_count.y",
   "min_dist_to_attraction", "min_dist_to_tube",
- "is_family_text", "is_couples_text","recency_group")
+ "is_family_text", "is_couples_text","recency_group", "is_stale")
 
 listings_clean[cols_to_drop] = NULL
 
@@ -493,6 +493,11 @@ train_rows = sample(seq_len(nrow(listings_clean)), size = train_size)
 
 train = listings_clean[train_rows, ]
 test = listings_clean[-train_rows, ]
+
+cols_to_remove_due_to_constancy = c("host_experience_years") 
+
+train = train[ , !(names(train) %in% cols_to_remove_due_to_constancy)]
+test = test[ , !(names(test) %in% cols_to_remove_due_to_constancy)]
 
 logistic_regression = glm(is_good_listing ~ ., data = train, family = binomial(link="logit"))
 summary(logistic_regression)
@@ -575,6 +580,7 @@ train_v3 = listings_clean[train_rows, ]
 test_v3 = listings_clean[-train_rows, ]
 
 cols_to_drop_v3 = c(
+  "host_experience_years",
   "Safety_Index",                   
   "neighbourhood_prosperity_tier",  
   "host_response_rate_missing",
